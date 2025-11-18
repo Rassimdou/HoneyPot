@@ -1,4 +1,4 @@
-# run_honeypot.py
+
 import config
 from storage import Storage
 import time
