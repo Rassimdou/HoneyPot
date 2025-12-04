@@ -1,4 +1,3 @@
-# handlers/ssh_handler.py
 import socket, threading, time
 from handlers.base import BaseHandler
 from deception import PseudoFS, run_command
@@ -67,7 +66,7 @@ class SSHHandler(BaseHandler):
             "src_port": port,
             "banner": self.banner,
             "client_banner": client_banner,
-            "geo": geo_data,               # ← GEOIP DATA ADDED
+            "geo": geo_data,                  # ← GEOIP DATA ADDED
             "session_id": session_id
         })
 
@@ -78,9 +77,13 @@ class SSHHandler(BaseHandler):
         for attempt in range(max_attempts):
             try:
                 conn.sendall(b"login: ")
+                # FIX 1: Add a timeout to prevent indefinite blocking during login
+                conn.settimeout(30.0) 
                 username = conn.recv(1024).decode(errors='ignore').strip()
 
                 conn.sendall(b"Password: ")
+                # FIX 1: Add a timeout to prevent indefinite blocking during password entry
+                conn.settimeout(30.0) 
                 password = conn.recv(1024).decode(errors='ignore').strip()
 
                 self.emit("auth_attempt", {
@@ -154,7 +157,16 @@ class SSHHandler(BaseHandler):
                                 conn.sendall(b"\r\nlogout\r\n")
                                 break
 
-                            output = run_command(cmd, fs, shell_name="bash")
+                            output_result = run_command(cmd, fs, shell_name="bash")
+                            
+                            # FIX 2: Check for tuple return and extract the string output.
+                            # The 'tuple' object has no attribute 'encode' error is fixed here.
+                            if isinstance(output_result, tuple):
+                                # Assuming the output string is the first element.
+                                output = output_result[0]
+                            else:
+                                output = output_result
+                            
                             if output:
                                 conn.sendall(b"\r\n" + output.encode() + b"\r\n")
                             else:
@@ -188,6 +200,7 @@ class SSHHandler(BaseHandler):
                 except socket.timeout:
                     break
 
+            # The shell error (if it happens) is caught here.
         except Exception as e:
             print(f"[SSH] Shell error from {ip}: {e}")
 

@@ -6,7 +6,7 @@ import time
 class SQLiteStorage:
     def __init__(self, db_path="honeypot.db"):
         self.db_path = db_path
-        self.slock = threading.Lock()
+        self.lock = threading.Lock()
         self._init_db()
 
 
@@ -122,7 +122,7 @@ class SQLiteStorage:
                 self.close_session(paylaod)
 
 
-        def save_auth_attempt(self, p):
+    def save_auth_attempt(self, p):
             conn = self._connect()
             cur = conn.cursor()
             cur.execute("""
@@ -132,7 +132,7 @@ class SQLiteStorage:
             conn.commit()
             conn.close()
 
-        def save_command(self, p):
+    def save_command(self, p):
             conn = self._connect()
             cur = conn.cursor()
             cur.execute("""
@@ -143,7 +143,7 @@ class SQLiteStorage:
             conn.close()
 
 
-        def save_geoip(self, p):
+    def save_geoip(self, p):
             if "geo" not in p: 
                 return
 
@@ -168,7 +168,7 @@ class SQLiteStorage:
             conn.close()
 
 
-        def close_session(self, p):
+    def close_session(self, p):
             conn = self._connect()
             cur = conn.cursor()
 
@@ -184,7 +184,7 @@ class SQLiteStorage:
 
 
 
-        def start_session(self, payload):
+    def start_session(self, payload):
             conn = self._connect()
             cur = conn.cursor()
 
@@ -200,4 +200,3 @@ class SQLiteStorage:
 
             conn.commit()
             conn.close()
-

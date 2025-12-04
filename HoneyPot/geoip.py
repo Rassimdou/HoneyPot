@@ -4,12 +4,12 @@ import os
 
 class GeoIP:
     def __init__(self):
-        self.city_db_path ="geoip/GeoLite-City.mmdb"
+        self.city_db_path ="geoip/GeoLite2-City.mmdb"
         self.asn_db_path = "geoip/GeoLite2-ASN.mmdb"
 
         self.city_reader = None
         self.asn_reader = None
-        self.load_databases()
+        self.load_database()
 
     def load_database(self):
         if os.path.exists(self.city_db_path):
@@ -18,7 +18,7 @@ class GeoIP:
             print("[GeoIP] WARNING: City database missing.")
 
         if os.path.exists(self.asn_db_path):
-            self.adn_reader = Render(self.asn_db_path)
+            self.adn_reader = Reader(self.asn_db_path)
         else:
                print("[GeoIP] WARNING: ASN database missing.")
 

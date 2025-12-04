@@ -1,4 +1,3 @@
-
 LISTEN =[
     {"name":"ssh_like","host":"0.0.0.0","port":2222,
      "banner": "SSH-2.0-OpenSSH_7.6p1 Ubuntu-4ubuntu0.3", "session_timeout": 120},
